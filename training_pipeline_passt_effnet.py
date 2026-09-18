@@ -72,8 +72,8 @@ from hear21passt.base import get_basic_model, get_model_passt
 
 CFG = {
     # Data
-    "data_dir_IPI_removed": r"/data/welmoed/datasets/European_data/merged_folder_IPI_removed",  # dataset path with IPI removed
-    "data_dir_with_IPI": r"/data/welmoed/datasets/European_data/merged_folder_with_IPI",        # dataset path with IPI
+    "data_dir_IPI_removed": " ",  # dataset path with IPI standardized
+    "data_dir_with_IPI": " ",        # dataset path with IPI original
     "pattern": "**/*.wav",
 
     # Shared
@@ -111,10 +111,10 @@ CFG = {
     "effnet_image_height": 128,
     "effnet_image_width": 1024,
     "effnet_normalize_spectrogram": True,
-    "effnet_results_dir_with_IPI": "/data/welmoed/models2/Naturalis_code/results_combined/results_efficientnet_with_IPI",
-    "effnet_log_dir_with_IPI": "/data/welmoed/models2/Naturalis_code/results_combined/logs_efficientnet_with_IPI",
-    "effnet_results_dir_IPI_removed": "/data/welmoed/models2/Naturalis_code/results_combined/results_efficientnet_IPI_removed",
-    "effnet_log_dir_IPI_removed": "/data/welmoed/models2/Naturalis_code/results_combined/logs_efficientnet_IPI_removed",
+    "effnet_results_dir_with_IPI": " ", # add path for result Original IPI
+    "effnet_log_dir_with_IPI": " ", # add path for logs origianl IPI
+    "effnet_results_dir_IPI_removed": " ", # add path for results Standardized IPI
+    "effnet_log_dir_IPI_removed": " ", # add path for logs standardized IPI
 
     # PaSST-specific
     "passt_target_sr": 32000, # sampling rate for PaSST (after time expansion)
@@ -125,10 +125,10 @@ CFG = {
     "passt_arch": "passt_20sec", # model architecture for PaSST
     "passt_input_tdim": 2000,
     "passt_use_class_weighted_loss": False,
-    "passt_results_dir_with_IPI": "/data/welmoed/models2/Naturalis_code/results_combined/results_PaSST_with_IPI",
-    "passt_log_dir_with_IPI": "/data/welmoed/models2/Naturalis_code/results_combined/logs_PaSST_with_IPI",
-    "passt_results_dir_IPI_removed": "/data/welmoed/models2/Naturalis_code/results_combined/results_PaSST_IPI_removed",
-    "passt_log_dir_IPI_removed": "/data/welmoed/models2/Naturalis_code/results_combined/logs_PaSST_IPI_removed",
+    "passt_results_dir_with_IPI": " ", # add path for result Original IPI
+    "passt_log_dir_with_IPI": " ", # add path for logs origianl IPI
+    "passt_results_dir_IPI_removed": " ", # add path for results Standardized IPI
+    "passt_log_dir_IPI_removed": " ",  # add path for logs standardized IPI
 }
 
 ###################################
