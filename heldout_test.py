@@ -66,8 +66,8 @@ from hear21passt.base import get_basic_model, get_model_passt
 
 CFG = {
     # Data
-    "data_dir_IPI_removed": r"/data/welmoed/datasets/European_data/merged_folder_IPI_removed",
-    "data_dir_with_IPI": r"/data/welmoed/datasets/European_data/merged_folder_with_IPI",
+    "data_dir_IPI_removed": " ", # add path to standardized IPI dataset
+    "data_dir_with_IPI": " ", # add path the original IPI dataset
     "pattern": "**/*.wav",
     "label_regex": r"^([^_]+_[^_]+)",
     "match_key": "basename",  # "basename" or "relative"
@@ -76,7 +76,7 @@ CFG = {
     "seed": 42,
     "train_fraction": 0.80,
     "test_fraction": 0.20,
-    "train_source": "IPI_removed",  # "IPI_removed" or "with_IPI"
+    "train_source": "IPI_removed",  # "IPI_removed" when you want to train the standardized IPI dataset and choose "with_IPI" to train with original IPI dataset
 
     # Training
     "num_workers": 0,
@@ -87,7 +87,7 @@ CFG = {
     "drop_last": True,
     "saved_model_name": "final_model.ckpt",
 
-    # Optional grid search
+    # Grid search  - did not use
     "grid_search": {
         "lr": [5e-5],
         "weight_decay": [1e-5],
@@ -107,8 +107,8 @@ CFG = {
     "effnet_image_height": 128,
     "effnet_image_width": 1024,
     "effnet_normalize_spectrogram": True,
-    "effnet_results_dir_cross_dataset": "/data/welmoed/models2/Naturalis_code/results_combined/results_efficientnet_80_IPI_removed_test_20_with_IPI",
-    "effnet_log_dir_cross_dataset": "/data/welmoed/models2/Naturalis_code/results_combined/logs_efficientnet_80_IPI_removed_test_20_with_IPI",
+    "effnet_results_dir_cross_dataset": " ", # add path for storage results of the heldout test
+    "effnet_log_dir_cross_dataset": " ", # add path for logs of the heldout test
 
     # PaSST-specific
     "passt_target_sr": 32000,
@@ -119,8 +119,8 @@ CFG = {
     "passt_arch": "passt_20sec",
     "passt_input_tdim": 2000,
     "passt_use_class_weighted_loss": False,
-    "passt_results_dir_cross_dataset": "/data/welmoed/models2/Naturalis_code/results_combined/results_PaSST_80_IPI_removed_test_20_with_IPI",
-    "passt_log_dir_cross_dataset": "/data/welmoed/models2/Naturalis_code/results_combined/logs_PaSST_80_IPI_removed_test_20_with_IPI",
+    "passt_results_dir_cross_dataset": " ", # add path for storage results of the heldout test
+    "passt_log_dir_cross_dataset": " ", # add path for logs of the heldout test
 }
 
 
