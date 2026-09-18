@@ -16,7 +16,7 @@ import soundfile as sf
 
 
 """
-How this code works:
+Working of pipeline:
 - Connect to a Linux server over SSH/SFTP
 - Find the next unannotated WAV file on the server
 - Download just that file to a local temp folder
@@ -24,17 +24,17 @@ How this code works:
 - Open the local 2-second segment in Audacity
 - Read labels back from Audacity using mod-script-pipe
 - Build a preview WAV by normalizing ONSET-TO-ONSET intervals:
-    * keep the original audio between consecutive onsets when it is shorter than target
-    * pad the remainder with background so the next onset lands exactly at target IPI
-    * if the original interval is longer than target, remove only excess background / non-protected
+    - keep the original audio between consecutive onsets when it is shorter than target
+    - pad the remainder with background so the next onset lands exactly at target IPI
+    - if the original interval is longer than target, remove only excess background / non-protected
       audio from that interval so the next onset lands exactly at target IPI
-    * keep protected intervals (for example "call" labels) intact as much as possible
+    - keep protected intervals (for example "call" labels) intact as much as possible
 - On 's', read labels from the current segment, close Audacity, and open the preview WAV in Audacity
 - On '2', discard the current 2-second segment and load the next 2-second segment from the same file
 - On 'd', save all outputs together:
-    * labels JSON to the server
-    * the current 2-second segment WAV to the server
-    * processed WAV to the server
+    - labels JSON to the server
+    - the current 2-second segment WAV to the server
+    - processed WAV to the server
   then close Audacity without saving the project
 - On 'k', skip just this file and close Audacity without saving the project
 - On 'f', skip the current folder and move to the next folder
@@ -50,7 +50,7 @@ Audacity requirements on the LOCAL computer:
     Edit > Preferences > Modules > mod-script-pipe > Enabled
 - Restart Audacity after enabling the module
 
-Most likely error: 
+Common error + solution: 
 AudacityError: Could not open Audacity write pipe after 30.0s: [Errno 2] The system cannot find the file specified: '\\.\pipe\ToSrvPipe'
 You need to close all audacity windows and make sure Audacity is running locally with mod-script-pipe enabled before starting the script.
 
@@ -60,31 +60,27 @@ You need to close all audacity windows and make sure Audacity is running locally
 # Configuration
 @dataclass
 class Config:
-    # ---- SSH / server ----
-    ssh_host: str = "ferret.hosts.naturalis.io" # naturalis server with European dataset
-    ssh_port: int = 22
-    ssh_username: str = "welmoed"
+    ssh_host: str = " " # add server name
+    ssh_port: int = " " # add server port
+    ssh_username: str = " " # add server username
     ssh_password: Optional[str] = None
 
-    # Original remote source audio
-    remote_dataset_dir: str = "/data/welmoed/datasets/European_data/merged_dataset"
+    remote_dataset_dir: str = " " # add path to the dataset with original recordings
 
-    # Save labels here
-    remote_annotations_dir: str = "/data/welmoed/datasets/European_data/test_annotations"
+    remote_annotations_dir: str = " " # add path to the annotation folder here
 
-    # Save 2-second trimmed source WAVs here
-    remote_trimmed_wav_dir: str = "/data/welmoed/datasets/European_data/merged_folder_with_IPI"
+    remote_trimmed_wav_dir: str = " " # add path to the folder where you want the 2-second trimmed wavs to be stored as original IPI wavs 
 
     # Save processed fixed-IPI WAVs here
-    remote_processed_wav_dir: str = "/data/welmoed/datasets/European_data/merged_folder_IPI_removed"
+    remote_processed_wav_dir: str = " " # add folder where you want the complete standardized IPI wavs to be 
 
     allowed_extensions: Tuple[str, ...] = (".wav", ".WAV", ".mp3", ".MP3")
 
     # ---- Local machine ----
-    audacity_exe: str = r"C:\Program Files\Audacity\Audacity.exe"
+    audacity_exe: str = r"C:\Program Files\Audacity\Audacity.exe" # make sure this is where Audacity is in File Explorer
     audacity_open_args: Tuple[str, ...] = ()
 
-    local_work_dir: str = r"C:\Users\welmo\Locale_Documenten\VScode_github_share_code\THESIS\waiting_room"
+    local_work_dir: str = " " # add folder path to local working directory like a waiting room for files
 
     audacity_pipe_timeout_sec: float = 30.0
     file_open_settle_sec: float = 3.0
@@ -94,8 +90,8 @@ class Config:
     target_ipi_sec: float = 0.050
 
     # Labels with duration are treated as protected and should be kept intact where possible.
-    # Example: "call"
-    max_crossfade_sec: float = 0.0  # keep 0.0 for exact timing; nonzero changes exact lengths
+ 
+    max_crossfade_sec: float = 0.0  
 
     min_background_patch_sec: float = 0.003
     random_seed: int = 1337
@@ -456,11 +452,7 @@ def merge_intervals(intervals: List[Tuple[float, float]]) -> List[Tuple[float, f
 
 
 def extract_protected_intervals(flat_labels: List[Dict]) -> List[Tuple[float, float]]:
-    """
-    Any label interval with end > start is treated as protected.
-    This typically includes labels like "call".
-    Onsets are point labels and are not treated as protected intervals.
-    """
+    
     intervals = []
     for item in flat_labels:
         start = float(item["start"])
@@ -564,16 +556,7 @@ def reduce_interval_by_trimming_removable(
     protected_rel_intervals: List[Tuple[int, int]],
     target_len: int
 ) -> Tuple[np.ndarray, Dict]:
-    """
-    Reduce an onset-to-onset interval to target_len by removing only from
-    non-protected regions if possible.
 
-    Strategy:
-    - Build alternating protected/removable segments.
-    - Remove excess from removable segments, starting from the end of the interval.
-    - Keep protected segments intact whenever possible.
-    - If removable material is insufficient, fall back to trimming from the end.
-    """
     current_len = len(interval_audio)
     if target_len >= current_len:
         return interval_audio.copy(), {
@@ -700,17 +683,7 @@ def build_fixed_ipi_preview(
     min_background_patch_sec: float,
     rng: random.Random,
 ) -> Tuple[np.ndarray, Dict]:
-    """
-    Build output interval-by-interval.
-
-    For each onset-to-onset interval:
-    - if original interval < target: keep it and add background to reach target
-    - if original interval > target: remove excess from non-protected regions to reach target
-    - if original interval == target: keep it unchanged
-
-    This enforces exact onset-to-onset spacing in the preview while changing the calls
-    as little as possible.
-    """
+  
     if audio.ndim == 1:
         audio = audio[:, None]
 
